@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.jiangruicheng.myway.RXbus.RxBus;
+import com.jiangruicheng.myway.data.Uuids;
 import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.DisBleConn;
 import com.jiangruicheng.myway.eventtype.ReciveCmd;
@@ -29,15 +30,15 @@ import rx.schedulers.Schedulers;
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
 public class ConnBle implements SendCmd {
-    private UUID uuid_service = UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB");
-    private UUID uuid_characteristic = UUID.fromString("0000FFE1-0000-1000-8000-00805F9B34FB");
-    private UUID uuid_getdata = UUID.fromString("49535343-8841-43F4-A8D4-ECBE34729BB3");
+    private UUID                        uuid_service;
+    private UUID                        uuid_characteristic;
+    private UUID                        uuid_getdata;
     //private BluetoothDevice device;
     // private Context context;
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGattCharacteristic getdata;
-    private HandlerCmd handlerCmd;
-    private BluetoothGattService gattService;
+    private HandlerCmd                  handlerCmd;
+    private BluetoothGattService        gattService;
     BluetoothGatt gatt;
     private ReciveCmd reciveCmd = new ReciveCmd();
     private Subscription SendCmd;
@@ -62,7 +63,7 @@ public class ConnBle implements SendCmd {
                 }
             }
         });
-        SendCmd = RxBus.getDefault().toObservable(com.jiangruicheng.myway.eventtype.SendCmd.class).observeOn(Schedulers.io()).subscribe(new Observer<com.jiangruicheng.myway.eventtype.SendCmd>() {
+        SendCmd = RxBus.getDefault().toObservable(com.jiangruicheng.myway.eventtype.SendCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<com.jiangruicheng.myway.eventtype.SendCmd>() {
             @Override
             public void onCompleted() {
 
@@ -82,7 +83,9 @@ public class ConnBle implements SendCmd {
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-    public BluetoothGatt connble(BluetoothDevice device, Context context) {
+    public BluetoothGatt connble(BluetoothDevice device, Context context, UUID service, UUID characteristic) {
+        uuid_service = service;
+        uuid_characteristic = characteristic;
         gatt = device.connectGatt(context, false, gattCallback);
         //getserver(gatt);
         return gatt;
@@ -97,7 +100,7 @@ public class ConnBle implements SendCmd {
         this.handlerCmd = null;
     }
 
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
+    @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void getserver(BluetoothGatt gatt) {
         /*BluetoothGattService service = gatt.getService(uuid_service);
         characteristic = service.getCharacteristic(uuid_characteristic);
@@ -105,6 +108,9 @@ public class ConnBle implements SendCmd {
         gatt.setCharacteristicNotification(getdata, true);*/
         List<BluetoothGattService> list;
         list = gatt.getServices();
+        if (uuid_service == null || uuid_characteristic == null) {
+            return;
+        }
         for (BluetoothGattService gattService : list) {
             if (gattService.getUuid().equals(uuid_service)) {
                 this.gattService = gattService;
@@ -117,6 +123,16 @@ public class ConnBle implements SendCmd {
             /*Log.d("TAG", "getserver: " + Integer.toHexString(Integer.valueOf(gattService.getUuid().toString())));*/
         }
 
+    }
+
+    @Override
+    public void write(byte[] cmd) {
+        characteristic.setValue(cmd);//41 54 02 17 00 52
+        gatt.writeCharacteristic(characteristic);
+        for (byte b : cmd) {
+            String a = Integer.toHexString(b);
+            Log.d("cmd", "getchcksun: " + Integer.toHexString(b));
+        }
     }
 
     private BluetoothGattCallback gattCallback = new BluetoothGattCallback() {
@@ -135,10 +151,19 @@ public class ConnBle implements SendCmd {
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
+/*
             handlerCmd.handler(characteristic.getValue());
+*/
             reciveCmd.setCmd(characteristic.getValue());
-            RxBus.getDefault().post(reciveCmd);
-            Log.i("blerecive", "onCharacteristicChanged: " + reciveCmd.getCmd().toString());
+            for (int i = 0; i < characteristic.getValue().length; i++) {
+                Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
+            }
+            if (characteristic.getValue()[2] == 0x05) {
+                RxBus.getDefault().post(reciveCmd);
+            }
+            if (characteristic.getValue()[2] == 0x01) {
+                Log.i("blerecive", "onCharacteristicChanged: " + reciveCmd.getCmd().toString());
+            }
         }
 
         @Override
@@ -186,10 +211,4 @@ public class ConnBle implements SendCmd {
             }
         }
     };
-
-    @Override
-    public void write(byte[] cmd) {
-        characteristic.setValue(cmd);//41 54 02 17 00 52
-        gatt.writeCharacteristic(characteristic);
-    }
 }

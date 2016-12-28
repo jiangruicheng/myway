@@ -1,3 +1,4 @@
+/*
 package com.jiangruicheng.myway.view;
 
 import android.annotation.TargetApi;
@@ -14,9 +15,12 @@ import android.view.View;
 
 import com.jiangruicheng.myway.R;
 
+*/
 /**
  * Created by jiang_ruicheng on 16/12/16.
  */
+/*
+
 public class ArcProgressBar extends View {
     public ArcProgressBar(Context context) {
         super(context);
@@ -163,7 +167,6 @@ public class ArcProgressBar extends View {
                         break;
                 }
                 mpPaint.setStrokeWidth(getWidth() / 80);
-                /*mpPaint.setAlpha(0);*/
                 canvas.drawLine(getWidth() / 2, getHeight(), getWidth() / 2, getHeight() - getHeight() / 19, mpPaint);
             }
 
@@ -171,7 +174,9 @@ public class ArcProgressBar extends View {
             //canvas.save();
         }
         //linePaint.setColor(Color.BLUE);
-        /*canvas.rotate(45 + 180 + rota, getWidth() / 2, getHeight() / 2);*/
+        */
+/*canvas.rotate(45 + 180 + rota, getWidth() / 2, getHeight() / 2);*//*
+
         canvas.rotate(45 + 180 + 180, getWidth() / 2, getHeight() / 2);
         Path path = new Path();
         path.moveTo(getWidth() / 2, getHeight() / 2 - getHeight() / 3);
@@ -186,18 +191,22 @@ public class ArcProgressBar extends View {
         canvas.drawPath(path, sanjiaoxing);
 
 
+*/
 /*        Path path1 = new Path();
         path1.moveTo(getWidth() / 2 - 7 * metrics.scaledDensity, getHeight() / 2);
         path1.lineTo(getWidth() / 2 + 7 * metrics.scaledDensity, getHeight() / 2);
         path1.lineTo(getWidth() / 2, getHeight() / 2 + getHeight() / 10);
         path1.close();
-        canvas.drawPath(path1, sanjiaoxing);*/
-        /*canvas.drawLine(getWidth() / 2 - 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2 + 7 * metrics.scaledDensity, getHeight() / 2, linePaint);
+        canvas.drawPath(path1, sanjiaoxing);*//*
+
+        */
+/*canvas.drawLine(getWidth() / 2 - 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2 + 7 * metrics.scaledDensity, getHeight() / 2, linePaint);
         canvas.drawLine(getWidth() / 2 - 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2, getHeight() / 2 - getHeight() / 5, linePaint);
         canvas.drawLine(getWidth() / 2 + 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2, getHeight() / 2 - getHeight() / 5, linePaint);
         canvas.drawLine(getWidth() / 2 - 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2, getHeight() / 2 + getHeight() / 10, linePaint);
         canvas.drawLine(getWidth() / 2 + 7 * metrics.scaledDensity, getHeight() / 2, getWidth() / 2, getHeight() / 2 + getHeight() / 10, linePaint);
-        canvas.rotate(120, getWidth() / 2, getHeight() / 2);*/
+        canvas.rotate(120, getWidth() / 2, getHeight() / 2);*//*
+
 
     }
 
@@ -246,14 +255,18 @@ public class ArcProgressBar extends View {
             //  x = getWidth() / 2 - x;
         } else if (rate > 90 && rate <= 180) {
             //x = (int) (getWidth() / 2 * Math.cos((rate - 90) * Math.PI / 180));
-            /*int x_1 = (int) ((getHeight() / 19) * Math.cos((rate - 90) * Math.PI / 180));*/
+            */
+/*int x_1 = (int) ((getHeight() / 19) * Math.cos((rate - 90) * Math.PI / 180));*//*
+
             int x_1 = (int) ((getWidth() / 2 - getHeight() / 10 - mpPaint.measureText(s)) * Math.cos((rate - 90) * Math.PI / 180));
             // x = getWidth() / 2 - x + x_1;
             //x = getWidth() / 2 - x;
             x = getWidth() / 2 - x_1;
         } else if (rate > 180 && rate <= 270) {
             // x = (int) (getWidth() / 2 * Math.cos((270 - rate) * Math.PI / 180));
-            /*int x_1 = (int) ((getHeight() / 19) * Math.cos((270 - rate) * Math.PI / 180));*/
+            */
+/*int x_1 = (int) ((getHeight() / 19) * Math.cos((270 - rate) * Math.PI / 180));*//*
+
             int x_1 = (int) ((getWidth() / 2 - getHeight() / 10 - mpPaint.measureText(s)) * Math.cos((270 - rate) * Math.PI / 180));
             //x = getWidth() / 2 + x - x_1;
             // x = getWidth() / 2 + x;
@@ -281,20 +294,26 @@ public class ArcProgressBar extends View {
             x = getHeight() / 2 + x_1;
         } else if (rate > 90 && rate <= 180) {
             //x = (int) (getWidth() / 2 * Math.sin((rate - 90) * Math.PI / 180));
-            /*int x_1 = (int) ((getHeight() / 19) * Math.sin((rate - 90) * Math.PI / 180));*/
+            */
+/*int x_1 = (int) ((getHeight() / 19) * Math.sin((rate - 90) * Math.PI / 180));*//*
+
             int x_1 = (int) ((getWidth() / 2 - getHeight() / 10 - mpPaint.measureText(s)) * Math.sin((rate - 90) * Math.PI / 180));
 
             // x = getHeight() / 2 - x + x_1;
             x = getHeight() / 2 - x_1;
         } else if (rate > 180 && rate <= 270) {
             // x = (int) (getWidth() / 2 * Math.sin((270 - rate) * Math.PI / 180));
-            /*int x_1 = (int) (getHeight() / 19 * Math.sin((270 - rate) * Math.PI / 180));*/
+            */
+/*int x_1 = (int) (getHeight() / 19 * Math.sin((270 - rate) * Math.PI / 180));*//*
+
             int x_1 = (int) ((getWidth() / 2 - getHeight() / 10 - mpPaint.measureText(s)) * Math.sin((270 - rate) * Math.PI / 180));
             //  x = getHeight() / 2 - x - x_1;
             x = getHeight() / 2 - x_1;
         } else if (rate > 270 && rate <= 360) {
             // x = (int) (getWidth() / 2 * Math.cos((360 - rate) * Math.PI / 180));
-            /*int x_1 = (int) (getHeight() / 19 * Math.cos((360 - rate) * Math.PI / 180));*/
+            */
+/*int x_1 = (int) (getHeight() / 19 * Math.cos((360 - rate) * Math.PI / 180));*//*
+
             int x_1 = (int) ((getWidth() / 2 - getHeight() / 10 - mpPaint.measureText(s)) * Math.cos((360 - rate) * Math.PI / 180));
             //x = getHeight() / 2 + x - x_1 * 6;
             x = getHeight() / 2 + x_1;
@@ -303,3 +322,4 @@ public class ArcProgressBar extends View {
         return x;
     }
 }
+*/

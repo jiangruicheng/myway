@@ -51,39 +51,49 @@
     <RelativeLayout
         android:id="@+id/biaopan"
         android:layout_width="match_parent"
-        android:layout_height="270dp"
+        android:layout_height="320dp"
         android:layout_alignParentTop="true"
         android:layout_marginLeft="24dp"
         android:layout_marginRight="24dp"
         android:layout_marginTop="90dp">
 
 
-        <com.jiangruicheng.myway.view.ArcProgressBar
+        <com.jiangruicheng.myway.view.ColorPaintView
             android:id="@+id/licheng"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:layout_alignParentLeft="true"
+            app:guide_nub="5"
+            app:guide_scale="10"
             app:scale="2"
-            app:title="总里程"
-            app:value="0"/>
+            app:title="总里程(km)"
+            app:value="123"
+            />
 
-        <com.jiangruicheng.myway.view.ArcProgressBar
+        <com.jiangruicheng.myway.view.ColorPaintView
             android:id="@+id/dianliang"
-            android:layout_width="120dp"
-            android:layout_height="120dp"
+            android:layout_width="140dp"
+            android:layout_height="140dp"
             android:layout_alignParentRight="true"
+            app:guide_nub="10"
+            app:guide_scale="10"
             app:scale="1"
-            app:title="总电量"
-            app:value="0"/>
+            app:title="电量(%)"
+            app:value="99"
+            />
 
-        <com.jiangruicheng.myway.view.ArcProgressBar
-            android:layout_width="200dp"
-            android:layout_height="200dp"
+        <com.jiangruicheng.myway.view.ColorPaintView
+            android:id="@+id/sudu"
+            android:layout_width="220dp"
+            android:layout_height="220dp"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            app:guide_nub="5"
+            app:guide_scale="8"
             app:scale="0"
-            app:title="时速"
-            app:value="99"/>
+            app:title="时速(km/h)"
+            app:value="39"
+            />
     </RelativeLayout>
 
     <FrameLayout

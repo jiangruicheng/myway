@@ -17,6 +17,8 @@ import com.jiangruicheng.myway.ble.ScanBle;
 import com.jiangruicheng.myway.eventtype.BleConn;
 import com.jiangruicheng.myway.eventtype.BluetoothSearch;
 
+import java.util.UUID;
+
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
@@ -25,8 +27,8 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by jiang_ruicheng on 16/12/15.
  */
 public class BleService extends Service {
-    Subscription ble_start;
-    Subscription ble_conn;
+    Subscription     ble_start;
+    Subscription     ble_conn;
     BluetoothAdapter bluetoothAdapter;
     private BleAdapter bleAdapter;
 
@@ -54,9 +56,12 @@ public class BleService extends Service {
 
             @Override
             public void onNext(BleConn conn) {
-                BluetoothDevice device = conn.getBluetoothDevice();
-                ConnBle connBle = new ConnBle();
-                connBle.connble(device, BleService.this);
+                BluetoothDevice device         = conn.getBluetoothDevice();
+                ConnBle         connBle        = new ConnBle();
+                UUID            service        = conn.getService();
+                UUID            characteristic = conn.getCharacteristic();
+
+                connBle.connble(device, BleService.this, service, characteristic);
                 connBle.registerhandler(new HandlerCmd() {
                     @Override
                     public void handler(byte[] data) {

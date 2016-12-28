@@ -16,9 +16,15 @@ import java.util.List;
 
 
 public class BleAdapter extends BaseAdapter {
-    List<BluetoothDevice> devices = new ArrayList<>();
-    LayoutInflater layoutInflater;
-    Context context;
+    List<BluetoothDevice> devices     = new ArrayList<>();
+
+    public List<DeviceMesg> getDeviceMesgs() {
+        return deviceMesgs;
+    }
+
+    List<DeviceMesg> deviceMesgs = new ArrayList<>();
+    LayoutInflater  layoutInflater;
+    Context         context;
     DataSetObserver observer;
 
     /*public interface DataSetObserver {
@@ -51,6 +57,7 @@ public class BleAdapter extends BaseAdapter {
     public void addDevice(BluetoothDevice device) {
         if (!devices.contains(device)) {
             devices.add(device);
+            parsername(device.getName(), deviceMesgs);
             notifyDataSetChanged();
         }
     }
@@ -82,13 +89,67 @@ public class BleAdapter extends BaseAdapter {
             /*observer.datachange(DataSetObserver.NOT_ZORE);*/
             TextView textView = (TextView) convertView.findViewById(R.id.mesg);
             //textView.setText(devices.get(position).getAddress());
-            BluetoothDevice bluetoothDevice = devices.get(position);
-            textView.setText("   " + bluetoothDevice.getName() + " \n" + "    " + bluetoothDevice.getAddress());
+            /*BluetoothDevice bluetoothDevice = devices.get(position);*/
+            textView.setText("   " + deviceMesgs.get(position).getType() + " \n" + "    " + deviceMesgs.get(position).getName());
         }
         return convertView;
     }
 
     public List<BluetoothDevice> getDevices() {
         return devices;
+    }
+
+    private void parsername(String name, List<DeviceMesg> deviceMesgList) {
+        int          i          = 0;
+        int          a          = 0;
+        StringBuffer devicename = new StringBuffer();
+        StringBuffer devicetype = new StringBuffer();
+        DeviceMesg   mesg       = new DeviceMesg();
+        boolean      isrun      = true;
+        while (isrun) {
+            if (a == name.length()) {
+                mesg.setName(devicename.toString());
+                deviceMesgList.add(mesg);
+                break;
+            }
+            if (name.charAt(a) == '-') {
+                i = 1;
+                a = a + 1;
+                mesg.setType(devicetype.toString());
+            }
+            switch (i) {
+                case 0:
+                    devicetype.append(name.charAt(a));
+                    break;
+                case 1:
+                    devicename.append(name.charAt(a));
+                    break;
+                case 2:
+                    break;
+            }
+            a++;
+        }
+    }
+
+    public static class DeviceMesg {
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public String getType() {
+            return type;
+        }
+
+        public void setType(String type) {
+            this.type = type;
+        }
+
+        String name;
+        String type;
+
     }
 }

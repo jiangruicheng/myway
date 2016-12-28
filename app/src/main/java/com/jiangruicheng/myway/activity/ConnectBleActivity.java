@@ -2,8 +2,12 @@ package com.jiangruicheng.myway.activity;
 
 import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
+import android.bluetooth.BluetoothDevice;
 import android.bluetooth.le.ScanResult;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -19,18 +23,25 @@ import android.widget.Toast;
 import com.jiangruicheng.myway.R;
 import com.jiangruicheng.myway.RXbus.RxBus;
 import com.jiangruicheng.myway.adapter.BleAdapter;
+import com.jiangruicheng.myway.data.Command;
+import com.jiangruicheng.myway.data.Uuids;
 import com.jiangruicheng.myway.eventtype.BleConn;
 import com.jiangruicheng.myway.eventtype.BluetoothSearch;
 import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.ReciveCmd;
 import com.jiangruicheng.myway.eventtype.SendCmd;
 
+import java.util.UUID;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import rx.Observable;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
+import rx.observers.Observers;
+import rx.subscriptions.Subscriptions;
 
 public class ConnectBleActivity extends AppCompatActivity {
 
@@ -39,11 +50,16 @@ public class ConnectBleActivity extends AppCompatActivity {
     @BindView(R.id.device_list)
     ListView deviceList;
     @BindView(R.id.send)
-    Button send;
+    Button   send;
 
     @OnClick(R.id.send)
     void onsend() {
-        RxBus.getDefault().post(new SendCmd().setCmd(edit.getText().toString().getBytes()));
+        String s = edit.getText().toString();
+        if (s.equals("0")) {
+            RxBus.getDefault().post(new SendCmd().setCmd(Command.CRC16Modbus.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01})));
+        } else {
+            RxBus.getDefault().post(new SendCmd().setCmd(Command.CRC16Modbus.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
+        }
     }
 
     @BindView(R.id.edit)
@@ -74,9 +90,27 @@ public class ConnectBleActivity extends AppCompatActivity {
     RelativeLayout title;
 
     private Subscription search;
-    private BleAdapter adapter;
+    private BleAdapter   adapter;
     private Subscription connsucc;
     private Subscription getmesg;
+    /*private final BroadcastReceiver mReceiver = new BroadcastReceiver() {
+        public void onReceive(Context context, Intent intent) {
+            String action = intent.getAction();
+            if (BluetoothDevice.ACTION_FOUND.equals(action)) {
+                // Discovery has found a device. Get the BluetoothDevice
+                // object and its info from the Intent.
+                BluetoothDevice device                = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                String          deviceName            = device.getName();
+                String          deviceHardwareAddress = device.getAddress(); // MAC address
+                if (adapter == null) {
+                    adapter = new BleAdapter(ConnectBleActivity.this);
+                    deviceList.setAdapter(adapter);
+                }
+                adapter.addDevice(device);
+            }
+
+        }
+    };*/
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +118,8 @@ public class ConnectBleActivity extends AppCompatActivity {
         setContentView(R.layout.activity_connect_ble);
         Intent intent = new Intent(this, BleService.class);
         startService(intent);
+       /* IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
+        registerReceiver(mReceiver, filter);*/
         getmesg = RxBus.getDefault().toObservable(ReciveCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ReciveCmd>() {
             @Override
             public void onCompleted() {
@@ -114,7 +150,6 @@ public class ConnectBleActivity extends AppCompatActivity {
             @Override
             public void onNext(ConnSucc connSucc) {
                 Toast.makeText(ConnectBleActivity.this, "succ", Toast.LENGTH_SHORT).show();
-
             }
         });
         search = RxBus.getDefault().toObservable(ScanResult.class).subscribe(new Observer<ScanResult>() {
@@ -142,8 +177,21 @@ public class ConnectBleActivity extends AppCompatActivity {
         deviceList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                UUID service        = null;
+                UUID characteristic = null;
+                switch ((adapter.getDeviceMesgs().get(i).getType())) {
+                    case "RA":
+                        service = Uuids.uuid_service_RA;
+                        characteristic = Uuids.uuid_characteristic_RA;
+                        break;
+                    case "SA":
+                        service = Uuids.uuid_service_SA;
+                        characteristic = Uuids.uuid_characteristic_SA;
+                        break;
+                }
+
                 if (adapter != null && !adapter.isEmpty()) {
-                    RxBus.getDefault().post(new BleConn().setBluetoothDevice(adapter.getDevices().get(i)));
+                    RxBus.getDefault().post(new BleConn().setBluetoothDevice(adapter.getDevices().get(i)).setService(service).setCharacteristic(characteristic));
                 }
             }
         });
