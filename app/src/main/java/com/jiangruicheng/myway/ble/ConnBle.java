@@ -117,6 +117,7 @@ public class ConnBle implements SendCmd {
                 characteristic = gattService.getCharacteristic(uuid_characteristic);
                 gatt.setCharacteristicNotification(characteristic, true);
                 RxBus.getDefault().post(new ConnSucc());
+                Log.d("ble", "getserver: success");
                 // characteristic.setValue(new byte[]{0x42, 0x54, 0x02, 0x17, 0x01, 0x51});//41 54 02 17 00 52
                 // gatt.writeCharacteristic(characteristic);
             }
@@ -131,7 +132,7 @@ public class ConnBle implements SendCmd {
         gatt.writeCharacteristic(characteristic);
         for (byte b : cmd) {
             String a = Integer.toHexString(b);
-            Log.d("cmd", "getchcksun: " + Integer.toHexString(b));
+            Log.d("cmd", "cmd: " + Integer.toHexString(b));
         }
     }
 
@@ -148,6 +149,8 @@ public class ConnBle implements SendCmd {
             Log.i("TAG", "onCharacteristicWrite: " + characteristic.getValue());
         }
 
+        byte[] by = new byte[54];
+
         @Override
         public void onCharacteristicChanged(BluetoothGatt gatt, BluetoothGattCharacteristic characteristic) {
             super.onCharacteristicChanged(gatt, characteristic);
@@ -160,7 +163,24 @@ public class ConnBle implements SendCmd {
             }
             if (characteristic.getValue()[2] == 0x05) {
                 RxBus.getDefault().post(reciveCmd);
+                if (characteristic.getValue()[3] > 20) {
+                    System.arraycopy(characteristic.getValue(), 0, by, 0, 20);
+                }
             }
+            if (characteristic.getValue().length < 20 && characteristic.getValue()[0] != 0x4d) {
+                System.arraycopy(characteristic.getValue(), 0, by, 40, 14);
+                byte[] type = new byte[4];
+                System.arraycopy(by, 4, type, 0, 4);
+                String s = new String(type);
+                Log.d("chartype", "onCharacteristicChanged: " + new String(type));
+                byte[] classic = new byte[8];
+                String a = new String(type);
+                Log.d("classic", "onCharacteristicChanged: " + new String(classic));
+                System.arraycopy(by, 7, classic, 0, 8);
+            } else if (characteristic.getValue()[0] != 0x4d) {
+                System.arraycopy(characteristic.getValue(), 0, by, 20, 20);
+            }
+
             if (characteristic.getValue()[2] == 0x01) {
                 Log.i("blerecive", "onCharacteristicChanged: " + reciveCmd.getCmd().toString());
             }
@@ -200,11 +220,12 @@ public class ConnBle implements SendCmd {
         @Override
         public void onConnectionStateChange(BluetoothGatt gatt, int status, int newState) {
             super.onConnectionStateChange(gatt, status, newState);
-            if (status == BluetoothGatt.GATT_SUCCESS) {
+            if (newState == BluetoothGatt.STATE_CONNECTED) {
                 Log.d("BLE", "CONNECT");
                 gatt.discoverServices();
                 //RxBus.getDefault().post(new ConnSucc());
-            } else if (status == BluetoothGatt.STATE_DISCONNECTED) {
+            } else if (newState == BluetoothGatt.STATE_DISCONNECTED) {
+                Log.d("BLE", "DISCONNECT");
                 if (SendCmd.isUnsubscribed()) {
                     SendCmd.unsubscribe();
                 }

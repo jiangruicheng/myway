@@ -3,6 +3,7 @@ package com.jiangruicheng.myway.adapter;
 import android.bluetooth.BluetoothDevice;
 import android.content.Context;
 import android.database.DataSetObserver;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +17,8 @@ import java.util.List;
 
 
 public class BleAdapter extends BaseAdapter {
-    List<BluetoothDevice> devices     = new ArrayList<>();
+    List<BluetoothDevice> devices = new ArrayList<>();
+    Handler               handler = new Handler();
 
     public List<DeviceMesg> getDeviceMesgs() {
         return deviceMesgs;
@@ -54,11 +56,16 @@ public class BleAdapter extends BaseAdapter {
         layoutInflater = LayoutInflater.from(context);
     }
 
-    public void addDevice(BluetoothDevice device) {
+    public void addDevice(final BluetoothDevice device) {
         if (!devices.contains(device)) {
             devices.add(device);
-            parsername(device.getName(), deviceMesgs);
-            notifyDataSetChanged();
+            new Thread() {
+                @Override
+                public void run() {
+                    super.run();
+                    parsername(device.getName(), deviceMesgs);
+                }
+            }.start();
         }
     }
 
@@ -99,7 +106,7 @@ public class BleAdapter extends BaseAdapter {
         return devices;
     }
 
-    private void parsername(String name, List<DeviceMesg> deviceMesgList) {
+    private synchronized void parsername(String name, List<DeviceMesg> deviceMesgList) {
         int          i          = 0;
         int          a          = 0;
         StringBuffer devicename = new StringBuffer();
@@ -110,6 +117,12 @@ public class BleAdapter extends BaseAdapter {
             if (a == name.length()) {
                 mesg.setName(devicename.toString());
                 deviceMesgList.add(mesg);
+                handler.post(new Runnable() {
+                    @Override
+                    public void run() {
+                        notifyDataSetChanged();
+                    }
+                });
                 break;
             }
             if (name.charAt(a) == '-') {

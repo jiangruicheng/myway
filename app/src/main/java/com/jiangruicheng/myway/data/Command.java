@@ -1,14 +1,50 @@
 package com.jiangruicheng.myway.data;
 
-import android.util.Log;
-
 /**
  * Created by kongqing on 12/21/16.
  */
 public class Command {
+    public static final byte HEAD_LOW            = 0x4d;
+    public static final byte HEAD_HEIGHT         = 0x57;
+    public static final byte EVENT_POWERANDSPEED = 0x01;
+    public static final byte EVENT_MILEAGE       = 0x02;
+    public static final byte COM_LIGHTPOWER      = 0x03;
+    public static final byte COM_LOCK            = 0x04;
+    public static final byte EVENT_ACK           = 0x05;
+    public static final byte COM_POWEROFF        = 0x07;
+    public static final byte COM_TEST            = 0x08;
+    public static final byte COM_LOCKSPEED       = 0x09;
+    public static final byte COM_UPDATA          = 0x0A;
+    public static final byte C0M_SLIDE           = 0x0B;
+    public static final byte C0M_ADJUST          = 0x0C;
+    public static final byte C0M_REPASSWORD      = 0x0D;
+    public static final byte C0M_RENAME          = 0x0E;
+    public static final byte C0M_QUERY           = 0x0F;
 
+    private byte[] comm(byte command, byte[] data) {
+        byte[] bytes = new byte[]{HEAD_LOW, HEAD_HEIGHT, command, (byte) data.length};
+        byte[] cmm   = new byte[bytes.length + data.length];
+        System.arraycopy(bytes, 0, cmm, 0, bytes.length);
+        System.arraycopy(data, 0, cmm, bytes.length, data.length);
+        return getCommand(cmm);
+    }
 
-    public static class CRC16Modbus {
+    public static byte[] getCommand(byte[] b) {
+        byte[] comm = new byte[b.length + 2];
+        System.arraycopy(b, 0, comm, 0, b.length);
+        System.arraycopy(CRC16Modbus.getchecksum(b), 1, comm, b.length, 1);
+        System.arraycopy(CRC16Modbus.getchecksum(b), 0, comm, b.length+1, 1);
+        return comm;
+    }
+
+    public static boolean chechsum(byte[] b) {
+        byte[] chechsum = CRC16Modbus.getchecksum(b);
+        if (chechsum[0] == b[b.length - 2] && chechsum[1] == b[b.length - 1])
+            return true;
+        return false;
+    }
+
+    private static class CRC16Modbus {
         private static final int[] TABLE = {
                 0x0000, 0xc0c1, 0xc181, 0x0140, 0xc301, 0x03c0, 0x0280, 0xc241,
                 0xc601, 0x06c0, 0x0780, 0xc741, 0x0500, 0xc5c1, 0xc481, 0x0440,
@@ -84,29 +120,34 @@ public class Command {
 
         private static CRC16Modbus crc;
 
-        public synchronized static byte[] getCommand(byte[] bytes) {
+        public synchronized static byte[] getchecksum(byte[] bytes) {
             if (crc == null) {
                 crc = new CRC16Modbus();
             }
             if (bytes.length > 4) {
-                crc.update(bytes[4]);
+                byte[] data = new byte[bytes[3]];
+                System.arraycopy(bytes, 4, data, 0, bytes[3]);
+                crc.update(data, 0, data.length);
             }
             /*for (byte d : bytes) {
                 crc.update(d);
             }*/
 
             //System.out.println(Integer.toHexString((int) crc.getValue()));
-            byte[] bytess = CRC16Modbus.intToByteArray((int) crc.getValue());
-            byte[] cmd    = new byte[bytes.length + 2];
+            // byte[] bytess = CRC16Modbus.intToByteArray((int) crc.getValue());
+           /* byte[] cmd    = new byte[bytes.length + 2];
             for (int i = 0; i < bytes.length; i++) {
                 cmd[i] = bytes[i];
             }
             cmd[bytes.length] = bytess[2];
-            cmd[bytes.length + 1] = bytess[3];
+            cmd[bytes.length + 1] = bytess[3];*/
+            byte[] bytess = crc.getCrcBytes();
             crc.reset();
 
-            return cmd;
+            return bytess;
         }
+
+
 
         /*public static void main(String[] arg) {
             byte[] b = new byte[]{0x01};
