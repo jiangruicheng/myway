@@ -17,20 +17,21 @@ import java.util.concurrent.ArrayBlockingQueue;
 
 import rx.Observer;
 import rx.Subscription;
+import rx.android.schedulers.AndroidSchedulers;
 
 
 /**
  * Created by kongqing on 16-12-29.
  */
 public class Quee {
-    interface callback {
+    public interface callback {
         void callback(byte[] b);
     }
 
     private QueeThread   queeThread;
     private Subscription recive;
 
-    private Map<Integer, List<callback>> eventcallbackmap;
+    private Map<String, List<callback>> eventcallbackmap;
 
     private static class GetQuee {
         private static final Quee QUEE = new Quee();
@@ -50,49 +51,50 @@ public class Quee {
 
         if (queeThread == null) {
             queeThread = new QueeThread();
-            new Thread(queeThread).start();
+            queeThread.start();
         }
 
         if (recive == null) {
             recive = RxBus.getDefault().
                     toObservable(ReciveCmd.class).
-                /*observeOn(AndroidSchedulers.mainThread()).*/
-                        subscribe(new Observer<ReciveCmd>() {
-                    @Override
-                    public void onCompleted() {
+                    observeOn(AndroidSchedulers.mainThread()).
+                    subscribe(new Observer<ReciveCmd>() {
+                        @Override
+                        public void onCompleted() {
 
-                    }
+                        }
 
-                    @Override
-                    public void onError(Throwable e) {
-                        Log.d("error", "onError: " + e.getMessage());
-                    }
+                        @Override
+                        public void onError(Throwable e) {
+                            Log.d("error", "onError: " + e.getMessage());
+                        }
 
-                    @Override
-                    public void onNext(ReciveCmd reciveCmd) {
-                        try {
+                        @Override
+                        public void onNext(ReciveCmd reciveCmd) {
+                            try {
 
-                            if (reciveCmd.getCmd()[0] == Command.HEAD_LOW && reciveCmd.getCmd()[1] == Command.HEAD_HEIGHT && Command.chechsum(reciveCmd.getCmd())) {
-                                byte eventtype = 0;
-                                if (reciveCmd.getCmd() != null && reciveCmd.getCmd()[2] != 0x01 && reciveCmd.getCmd()[2] != 0x02) {
-                                    eventtype = geteventtype(reciveCmd.getCmd());
-                                }
-
-                                if (reciveCmd.getCmd()[2] == Command.EVENT_ACK) {
+                                if (reciveCmd.getCmd()[0] == Command.HEAD_LOW && reciveCmd.getCmd()[1] == Command.HEAD_HEIGHT && Command.chechsum(reciveCmd.getCmd())) {
+                                    byte eventtype = 0;
+                                    if (reciveCmd.getCmd() != null && reciveCmd.getCmd()[2] != 0x01 && reciveCmd.getCmd()[2] != 0x02) {
+                                        eventtype = geteventtype(reciveCmd.getCmd());
+                                    }
                                     Log.i("send", "addcomm: GO");
-                                    onnext();
-                                }
-                                if (eventcallbackmap != null && eventcallbackmap.containsKey(eventtype)) {
-                                    for (callback c : eventcallbackmap.get(eventtype)) {
-                                        c.callback(reciveCmd.getCmd());
+                                    if (reciveCmd.getCmd()[2] == Command.EVENT_ACK) {
+                                        Log.i("send", "addcomm: GO");
+                                        onnext();
+                                    }
+                                    Log.d("TAG", "onNext: "+eventcallbackmap.containsKey(String.valueOf(eventtype)));
+                                    if (eventcallbackmap != null && eventcallbackmap.containsKey(String.valueOf(eventtype))) {
+                                        for (callback c : eventcallbackmap.get(String.valueOf(eventtype))) {
+                                            c.callback(reciveCmd.getCmd());
+                                        }
                                     }
                                 }
+                            } catch (Exception e) {
+                                Log.d("error", "onNext: " + e.getMessage());
                             }
-                        } catch (Exception e) {
-                            Log.d("error", "onNext: " + e.getMessage());
                         }
-                    }
-                });
+                    });
         }
     }
 
@@ -101,9 +103,9 @@ public class Quee {
             if (!eventcallbackmap.containsKey(type)) {
                 List<callback> callbacks = new ArrayList<>();
                 callbacks.add(callback);
-                eventcallbackmap.put(type, callbacks);
+                eventcallbackmap.put(String.valueOf(type), callbacks);
             } else {
-                eventcallbackmap.get(type).add(callback);
+                eventcallbackmap.get(String.valueOf(type)).add(callback);
             }
         }
     }
@@ -207,7 +209,9 @@ public class Quee {
 
         public void next() {
             /*comm.remove(comm.size() - 1);*/
+            comm.poll();
             isrun = true;
+
             Log.i("next", "addcomm: " + isrun);
         }
 
@@ -215,25 +219,20 @@ public class Quee {
         public void run() {
             super.run();
             while (true) {
+                try {
+                    sleep(1);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
                 if (stop) {
                     break;
                 }
-                if (!comm.isEmpty()) {
-
-
+                if (!comm.isEmpty() && isrun) {
                     if (comm.size() != 0) {
                         RxBus.getDefault().post(new SendCmd().setCmd(comm.element()));
                         Log.i("send", "addcomm: " + comm.element()[2]);
                         isrun = false;
                     }
-                    while (true) {
-                        if (isrun) {
-                            pop();
-                            isrun = false;
-                            break;
-                        }
-                    }
-
                 }
             }
         }

@@ -52,13 +52,19 @@ public class ConnectBleActivity extends AppCompatActivity {
         String s = edit.getText().toString();
         if (s.equals("0")) {
             Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01}));
-            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01})));
+            //RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01})));
         } else if (s.equals("1")) {
-            Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00}));
-            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
+            //Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00}));
+            Quee.getDefault().registcallback(0x04, new Quee.callback() {
+                @Override
+                public void callback(byte[] b) {
+                    Toast.makeText(ConnectBleActivity.this, "回调成功", Toast.LENGTH_SHORT).show();
+                }
+            });
+            RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
         } else {
-            Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01}));
-            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01})));
+            //Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01}));
+            RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01})));
         }
     }
 
