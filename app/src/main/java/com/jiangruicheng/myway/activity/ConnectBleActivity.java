@@ -27,6 +27,7 @@ import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.DisBleConn;
 import com.jiangruicheng.myway.eventtype.ReciveCmd;
 import com.jiangruicheng.myway.eventtype.SendCmd;
+import com.jiangruicheng.myway.util.Quee;
 
 import java.util.UUID;
 
@@ -50,9 +51,14 @@ public class ConnectBleActivity extends AppCompatActivity {
     void onsend() {
         String s = edit.getText().toString();
         if (s.equals("0")) {
-            RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01})));
+            Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01}));
+            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x08, 0x01, 0x01})));
+        } else if (s.equals("1")) {
+            Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00}));
+            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
         } else {
-            RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
+            Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01}));
+            //RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01})));
         }
     }
 
@@ -114,7 +120,7 @@ public class ConnectBleActivity extends AppCompatActivity {
         startService(intent);
        /* IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(mReceiver, filter);*/
-        getmesg = RxBus.getDefault().toObservable(ReciveCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ReciveCmd>() {
+        /*getmesg = RxBus.getDefault().toObservable(ReciveCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ReciveCmd>() {
             @Override
             public void onCompleted() {
 
@@ -129,7 +135,7 @@ public class ConnectBleActivity extends AppCompatActivity {
             public void onNext(ReciveCmd reciveCmd) {
                 show.setText(String.valueOf(reciveCmd.getCmd()));
             }
-        });
+        });*/
         connsucc = RxBus.getDefault().toObservable(ConnSucc.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<ConnSucc>() {
             @Override
             public void onCompleted() {
@@ -205,9 +211,15 @@ public class ConnectBleActivity extends AppCompatActivity {
         super.onDestroy();
         if (search.isUnsubscribed()) {
             search.unsubscribe();
+            search = null;
         }
         if (connsucc.isUnsubscribed()) {
             connsucc.unsubscribe();
+            connsucc = null;
         }
+      /*  if (getmesg.isUnsubscribed()) {
+            getmesg.unsubscribe();
+            getmesg = null;
+        }*/
     }
 }

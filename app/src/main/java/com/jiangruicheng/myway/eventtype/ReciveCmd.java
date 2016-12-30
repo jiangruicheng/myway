@@ -10,7 +10,8 @@ public class ReciveCmd {
         return cmd;
     }
 
-    public void setCmd(byte[] cmd) {
+    public ReciveCmd setCmd(byte[] cmd) {
         this.cmd = cmd;
+        return this;
     }
 }

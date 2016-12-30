@@ -92,7 +92,7 @@ public class BleAdapter extends BaseAdapter {
         if (devices.size() == 0) {
             /*observer.datachange(DataSetObserver.ZORE);*/
         }
-        if (devices.size() != 0) {
+        if (devices.size() != 0&&!deviceMesgs.isEmpty()) {
             /*observer.datachange(DataSetObserver.NOT_ZORE);*/
             TextView textView = (TextView) convertView.findViewById(R.id.mesg);
             //textView.setText(devices.get(position).getAddress());

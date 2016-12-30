@@ -16,6 +16,7 @@ import com.jiangruicheng.myway.data.Uuids;
 import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.DisBleConn;
 import com.jiangruicheng.myway.eventtype.ReciveCmd;
+import com.jiangruicheng.myway.util.Quee;
 
 import java.util.List;
 import java.util.UUID;
@@ -29,7 +30,7 @@ import rx.schedulers.Schedulers;
  * XIU GAI WAN CHENG
  */
 @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
-public class ConnBle implements SendCmd {
+public class ConnBle {
     private UUID                        uuid_service;
     private UUID                        uuid_characteristic;
     private UUID                        uuid_getdata;
@@ -60,26 +61,30 @@ public class ConnBle implements SendCmd {
             public void onNext(DisBleConn disBleConn) {
                 if (gatt != null) {
                     gatt.disconnect();
+                    Quee.getDefault().onstop();
                 }
             }
         });
-        SendCmd = RxBus.getDefault().toObservable(com.jiangruicheng.myway.eventtype.SendCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<com.jiangruicheng.myway.eventtype.SendCmd>() {
-            @Override
-            public void onCompleted() {
+        if (SendCmd == null) {
+            SendCmd = RxBus.getDefault().toObservable(com.jiangruicheng.myway.eventtype.SendCmd.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<com.jiangruicheng.myway.eventtype.SendCmd>() {
+                @Override
+                public void onCompleted() {
 
-            }
+                }
 
-            @Override
-            public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
-            }
+                }
 
-            @Override
-            public void onNext(com.jiangruicheng.myway.eventtype.SendCmd sendCmd) {
-                write(sendCmd.getCmd());
-                Log.i("blesend", "onNext: " + sendCmd.getCmd().toString());
-            }
-        });
+                @Override
+                public void onNext(com.jiangruicheng.myway.eventtype.SendCmd sendCmd) {
+                    sendCmd.getCmd();
+                    write(sendCmd.getCmd());
+                    Log.i("blesend", "onNext: " + sendCmd.getCmd().toString());
+                }
+            });
+        }
     }
 
     @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR2)
@@ -118,6 +123,13 @@ public class ConnBle implements SendCmd {
                 gatt.setCharacteristicNotification(characteristic, true);
                 RxBus.getDefault().post(new ConnSucc());
                 Log.d("ble", "getserver: success");
+                new Thread() {
+                    @Override
+                    public void run() {
+                        super.run();
+                        Quee.getDefault().onstart();
+                    }
+                }.start();
                 // characteristic.setValue(new byte[]{0x42, 0x54, 0x02, 0x17, 0x01, 0x51});//41 54 02 17 00 52
                 // gatt.writeCharacteristic(characteristic);
             }
@@ -126,7 +138,7 @@ public class ConnBle implements SendCmd {
 
     }
 
-    @Override
+
     public void write(byte[] cmd) {
         characteristic.setValue(cmd);//41 54 02 17 00 52
         gatt.writeCharacteristic(characteristic);
@@ -157,7 +169,11 @@ public class ConnBle implements SendCmd {
 /*
             handlerCmd.handler(characteristic.getValue());
 */
-            reciveCmd.setCmd(characteristic.getValue());
+            RxBus.getDefault().post(new ReciveCmd().setCmd(characteristic.getValue()));
+            for (int i = 0; i < characteristic.getValue().length; i++) {
+                Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
+            }
+           /* reciveCmd.setCmd(characteristic.getValue());
             for (int i = 0; i < characteristic.getValue().length; i++) {
                 Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
             }
@@ -174,7 +190,7 @@ public class ConnBle implements SendCmd {
                 String s = new String(type);
                 Log.d("chartype", "onCharacteristicChanged: " + new String(type));
                 byte[] classic = new byte[8];
-                String a = new String(type);
+                String a       = new String(type);
                 Log.d("classic", "onCharacteristicChanged: " + new String(classic));
                 System.arraycopy(by, 7, classic, 0, 8);
             } else if (characteristic.getValue()[0] != 0x4d) {
@@ -183,7 +199,7 @@ public class ConnBle implements SendCmd {
 
             if (characteristic.getValue()[2] == 0x01) {
                 Log.i("blerecive", "onCharacteristicChanged: " + reciveCmd.getCmd().toString());
-            }
+            }*/
         }
 
         @Override
@@ -228,6 +244,11 @@ public class ConnBle implements SendCmd {
                 Log.d("BLE", "DISCONNECT");
                 if (SendCmd.isUnsubscribed()) {
                     SendCmd.unsubscribe();
+                    SendCmd = null;
+                }
+                if (disconn.isUnsubscribed()) {
+                    disconn.unsubscribe();
+                    disconn = null;
                 }
             }
         }
