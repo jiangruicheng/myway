@@ -12,6 +12,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.jiangruicheng.myway.RXbus.RxBus;
+import com.jiangruicheng.myway.data.Command;
 import com.jiangruicheng.myway.data.Uuids;
 import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.DisBleConn;
@@ -79,9 +80,14 @@ public class ConnBle {
 
                 @Override
                 public void onNext(com.jiangruicheng.myway.eventtype.SendCmd sendCmd) {
-                    sendCmd.getCmd();
-                    write(sendCmd.getCmd());
-                    Log.i("blesend", "onNext: " + sendCmd.getCmd().toString());
+                    try {
+                        sendCmd.getCmd();
+                        write(sendCmd.getCmd());
+                        Log.i("send", "onNext: " + sendCmd.getCmd().toString());
+
+                    } catch (Exception e) {
+                        Log.d("send", "onNext: " + e.getMessage());
+                    }
                 }
             });
         }
@@ -133,7 +139,7 @@ public class ConnBle {
                 // characteristic.setValue(new byte[]{0x42, 0x54, 0x02, 0x17, 0x01, 0x51});//41 54 02 17 00 52
                 // gatt.writeCharacteristic(characteristic);
             }
-            /*Log.d("TAG", "getserver: " + Integer.toHexString(Integer.valueOf(gattService.getUuid().toString())));*/
+            /*Log.d("TAG", "getserver: " + Integer.toHexStIntegerring(Integer.valueOf(gattService.getUuid().toString())));*/
         }
 
     }
@@ -169,37 +175,35 @@ public class ConnBle {
 /*
             handlerCmd.handler(characteristic.getValue());
 */
-            RxBus.getDefault().post(new ReciveCmd().setCmd(characteristic.getValue()));
-            for (int i = 0; i < characteristic.getValue().length; i++) {
-                Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
-            }
-           /* reciveCmd.setCmd(characteristic.getValue());
-            for (int i = 0; i < characteristic.getValue().length; i++) {
-                Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
-            }
-            if (characteristic.getValue()[2] == 0x05) {
+            if (characteristic.getValue()[3] < 20 && characteristic.getValue()[0] == Command.HEAD_LOW && characteristic.getValue()[1] == Command.HEAD_HEIGHT) {
+                reciveCmd.setCmd(characteristic.getValue());
                 RxBus.getDefault().post(reciveCmd);
-                if (characteristic.getValue()[3] > 20) {
-                    System.arraycopy(characteristic.getValue(), 0, by, 0, 20);
-                }
             }
-            if (characteristic.getValue().length < 20 && characteristic.getValue()[0] != 0x4d) {
-                System.arraycopy(characteristic.getValue(), 0, by, 40, 14);
-                byte[] type = new byte[4];
+            for (int i = 0; i < characteristic.getValue().length; i++) {
+                Log.d("data" + i, Integer.toHexString(characteristic.getValue()[i]));
+            }
+            //reciveCmd.setCmd(characteristic.getValue());
+            if (characteristic.getValue()[3] > 20 && characteristic.getValue()[0] == Command.HEAD_LOW && characteristic.getValue()[1] == Command.HEAD_HEIGHT) {
+                System.arraycopy(characteristic.getValue(), 0, by, 0, 20);
+            }
+
+            if (characteristic.getValue().length < 20 && characteristic.getValue()[0] != Command.HEAD_LOW && characteristic.getValue()[1] != Command.HEAD_HEIGHT) {
+                System.arraycopy(characteristic.getValue(), 0, by, 40, characteristic.getValue().length);
+                reciveCmd.setCmd(by);
+                RxBus.getDefault().post(reciveCmd);
+                /*byte[] type = new byte[4];
                 System.arraycopy(by, 4, type, 0, 4);
                 String s = new String(type);
                 Log.d("chartype", "onCharacteristicChanged: " + new String(type));
                 byte[] classic = new byte[8];
                 String a       = new String(type);
                 Log.d("classic", "onCharacteristicChanged: " + new String(classic));
-                System.arraycopy(by, 7, classic, 0, 8);
-            } else if (characteristic.getValue()[0] != 0x4d) {
+                System.arraycopy(by, 7, classic, 0, 8);*/
+            } else if (characteristic.getValue().length == 20 && characteristic.getValue()[0] != Command.HEAD_LOW && characteristic.getValue()[1] != Command.HEAD_HEIGHT) {
                 System.arraycopy(characteristic.getValue(), 0, by, 20, 20);
             }
 
-            if (characteristic.getValue()[2] == 0x01) {
-                Log.i("blerecive", "onCharacteristicChanged: " + reciveCmd.getCmd().toString());
-            }*/
+
         }
 
         @Override

@@ -39,7 +39,7 @@ public class Command {
 
     public static boolean chechsum(byte[] b) {
         byte[] chechsum = CRC16Modbus.getchecksum(b);
-        if (chechsum[0] == b[b.length - 2] && chechsum[1] == b[b.length - 1])
+        if (chechsum[0] == b[b.length - 1] && chechsum[1] == b[b.length - 2])
             return true;
         return false;
     }

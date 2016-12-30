@@ -58,7 +58,7 @@ public class ConnectBleActivity extends AppCompatActivity {
             // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x00})));
         } else {
             Quee.getDefault().sendcomm(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01}));
-            //RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01})));
+            // RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(new byte[]{0x4D, 0x57, 0x04, 0x01, 0x01})));
         }
     }
 

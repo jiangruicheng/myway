@@ -43,60 +43,64 @@ public class BleService extends Service {
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        ble_conn = RxBus.getDefault().toObservable(BleConn.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<BleConn>() {
-            @Override
-            public void onCompleted() {
+        if (ble_conn == null) {
+            ble_conn = RxBus.getDefault().toObservable(BleConn.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<BleConn>() {
+                @Override
+                public void onCompleted() {
 
-            }
+                }
 
-            @Override
-            public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
-            }
+                }
 
-            @Override
-            public void onNext(BleConn conn) {
-                BluetoothDevice device         = conn.getBluetoothDevice();
-                ConnBle         connBle        = new ConnBle();
-                UUID            service        = conn.getService();
-                UUID            characteristic = conn.getCharacteristic();
+                @Override
+                public void onNext(BleConn conn) {
+                    BluetoothDevice device         = conn.getBluetoothDevice();
+                    ConnBle         connBle        = new ConnBle();
+                    UUID            service        = conn.getService();
+                    UUID            characteristic = conn.getCharacteristic();
 
-                connBle.connble(device, BleService.this, service, characteristic);
-                connBle.registerhandler(new HandlerCmd() {
-                    @Override
-                    public void handler(byte[] data) {
+                    connBle.connble(device, BleService.this, service, characteristic);
+                    connBle.registerhandler(new HandlerCmd() {
+                        @Override
+                        public void handler(byte[] data) {
 
-                    }
-                });
-            }
-        });
-        ble_start = RxBus.getDefault().toObservable(BluetoothSearch.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Object>() {
-            @Override
-            public void onCompleted() {
+                        }
+                    });
+                }
+            });
+        }
+        if (ble_start == null) {
+            ble_start = RxBus.getDefault().toObservable(BluetoothSearch.class).observeOn(AndroidSchedulers.mainThread()).subscribe(new Observer<Object>() {
+                @Override
+                public void onCompleted() {
 
-            }
+                }
 
-            @Override
-            public void onError(Throwable e) {
+                @Override
+                public void onError(Throwable e) {
 
-            }
+                }
 
-            @Override
-            public void onNext(Object o) {
-                if (!bluetoothAdapter.isEnabled()) {
-                    Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
-                    startActivity(enableBtIntent);
-                } else {
-
-                    if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
-                        bluetoothAdapter.startDiscovery();
+                @Override
+                public void onNext(Object o) {
+                    if (!bluetoothAdapter.isEnabled()) {
+                        Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
+                        startActivity(enableBtIntent);
                     } else {
-                        ScanBle scanBle = new ScanBle(bleAdapter, new Handler());
-                        scanBle.scantble();
+
+                        if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
+                            bluetoothAdapter.startDiscovery();
+                        } else {
+                            ScanBle scanBle = new ScanBle(bleAdapter, new Handler());
+                            scanBle.scantble();
+                        }
                     }
                 }
-            }
-        });
+            });
+        }
         return super.onStartCommand(intent, flags, startId);
     }
 

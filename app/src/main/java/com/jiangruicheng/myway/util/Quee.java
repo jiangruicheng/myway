@@ -11,11 +11,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executor;
+import java.util.Queue;
+import java.util.Vector;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import rx.Observer;
 import rx.Subscription;
-import rx.android.schedulers.AndroidSchedulers;
+
 
 /**
  * Created by kongqing on 16-12-29.
@@ -69,14 +71,15 @@ public class Quee {
                     @Override
                     public void onNext(ReciveCmd reciveCmd) {
                         try {
+
                             if (reciveCmd.getCmd()[0] == Command.HEAD_LOW && reciveCmd.getCmd()[1] == Command.HEAD_HEIGHT && Command.chechsum(reciveCmd.getCmd())) {
                                 byte eventtype = 0;
                                 if (reciveCmd.getCmd() != null && reciveCmd.getCmd()[2] != 0x01 && reciveCmd.getCmd()[2] != 0x02) {
                                     eventtype = geteventtype(reciveCmd.getCmd());
                                 }
 
-                                if (eventtype == Command.EVENT_ACK) {
-                                    pop();
+                                if (reciveCmd.getCmd()[2] == Command.EVENT_ACK) {
+                                    Log.i("send", "addcomm: GO");
                                     onnext();
                                 }
                                 if (eventcallbackmap != null && eventcallbackmap.containsKey(eventtype)) {
@@ -121,9 +124,10 @@ public class Quee {
         }
         if (b[2] == 0x05) {
             return b[4];
-        } else {
+        }/* else if (b[2] != 0x05) {
             return b[2];
-        }
+        }*/
+        return b[2];
     }
 
     private void getcallback(int type) {
@@ -174,19 +178,19 @@ public class Quee {
     }
 
     private class QueeThread extends Thread {
-        private boolean      isrun;
-        private boolean      stop;
-        private List<byte[]> comm;
+        private boolean       isrun;
+        private boolean       stop;
+        private Queue<byte[]> comm;
 
         public QueeThread() {
-            comm = new ArrayList<>();
+            comm = new ArrayBlockingQueue<byte[]>(20);
             isrun = true;
             stop = false;
         }
 
         public void addcomm(byte[] b) {
             comm.add(b);
-            Log.i("send", "addcomm: " + isrun);
+            Log.i("add", "addcomm: " + isrun);
         }
 
         public void removecomm(byte[] b) {
@@ -194,7 +198,7 @@ public class Quee {
         }
 
         public void pop() {
-            comm.remove(comm.size() - 1);
+            comm.poll();
         }
 
         public void onstop() {
@@ -202,7 +206,9 @@ public class Quee {
         }
 
         public void next() {
+            /*comm.remove(comm.size() - 1);*/
             isrun = true;
+            Log.i("next", "addcomm: " + isrun);
         }
 
         @Override
@@ -212,9 +218,22 @@ public class Quee {
                 if (stop) {
                     break;
                 }
-                if (!comm.isEmpty() && isrun) {
-                    RxBus.getDefault().post(new SendCmd().setCmd(comm.get(comm.size() - 1)));
-                    isrun = false;
+                if (!comm.isEmpty()) {
+
+
+                    if (comm.size() != 0) {
+                        RxBus.getDefault().post(new SendCmd().setCmd(comm.element()));
+                        Log.i("send", "addcomm: " + comm.element()[2]);
+                        isrun = false;
+                    }
+                    while (true) {
+                        if (isrun) {
+                            pop();
+                            isrun = false;
+                            break;
+                        }
+                    }
+
                 }
             }
         }
