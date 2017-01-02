@@ -7,8 +7,8 @@ import android.widget.FrameLayout;
 import com.ashokvarma.bottomnavigation.BottomNavigationBar;
 import com.ashokvarma.bottomnavigation.BottomNavigationItem;
 import com.jiangruicheng.myway.R;
+import com.jiangruicheng.myway.fragment.CarCheckOutFragment;
 import com.jiangruicheng.myway.fragment.CarFragment;
-import com.jiangruicheng.myway.fragment.CarStatuFragment;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
             public void onTabSelected(int position) {
                 switch (position) {
                     case 1:
-                        getSupportFragmentManager().beginTransaction().replace(R.id.frame, new CarStatuFragment()).commit();
+                        getSupportFragmentManager().beginTransaction().replace(R.id.frame, new CarCheckOutFragment()).commit();
                         break;
                     case 2:
                         getSupportFragmentManager().beginTransaction().replace(R.id.frame, new CarFragment()).commit();

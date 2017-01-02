@@ -13,7 +13,6 @@ import android.util.Log;
 
 import com.jiangruicheng.myway.RXbus.RxBus;
 import com.jiangruicheng.myway.data.Command;
-import com.jiangruicheng.myway.data.Uuids;
 import com.jiangruicheng.myway.eventtype.ConnSucc;
 import com.jiangruicheng.myway.eventtype.DisBleConn;
 import com.jiangruicheng.myway.eventtype.ReciveCmd;
@@ -25,7 +24,6 @@ import java.util.UUID;
 import rx.Observer;
 import rx.Subscription;
 import rx.android.schedulers.AndroidSchedulers;
-import rx.schedulers.Schedulers;
 
 /**
  * XIU GAI WAN CHENG
@@ -39,7 +37,6 @@ public class ConnBle {
     // private Context context;
     private BluetoothGattCharacteristic characteristic;
     private BluetoothGattCharacteristic getdata;
-    private HandlerCmd                  handlerCmd;
     private BluetoothGattService        gattService;
     BluetoothGatt gatt;
     private ReciveCmd reciveCmd = new ReciveCmd();
@@ -102,15 +99,6 @@ public class ConnBle {
         return gatt;
 
     }
-
-    public void registerhandler(HandlerCmd handlerCmd) {
-        this.handlerCmd = handlerCmd;
-    }
-
-    public void unregisterhandler(HandlerCmd handlerCmd) {
-        this.handlerCmd = null;
-    }
-
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void getserver(BluetoothGatt gatt) {
         /*BluetoothGattService service = gatt.getService(uuid_service);

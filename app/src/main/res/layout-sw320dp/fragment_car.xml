@@ -58,7 +58,7 @@
         android:layout_marginTop="90dp">
 
 
-        <com.jiangruicheng.myway.view.ColorPaintView
+        <com.jiangruicheng.myway.view.ArcProgBar
             android:id="@+id/licheng"
             android:layout_width="120dp"
             android:layout_height="120dp"
@@ -70,7 +70,7 @@
             app:value="123"
             />
 
-        <com.jiangruicheng.myway.view.ColorPaintView
+        <com.jiangruicheng.myway.view.ArcProgBar
             android:id="@+id/dianliang"
             android:layout_width="120dp"
             android:layout_height="120dp"
@@ -82,7 +82,7 @@
             app:value="99"
             />
 
-        <com.jiangruicheng.myway.view.ColorPaintView
+        <com.jiangruicheng.myway.view.ArcProgBar
             android:id="@+id/sudu"
             android:layout_width="190dp"
             android:layout_height="190dp"

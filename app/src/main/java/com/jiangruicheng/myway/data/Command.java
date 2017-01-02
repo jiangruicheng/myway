@@ -4,26 +4,26 @@ package com.jiangruicheng.myway.data;
  * Created by kongqing on 12/21/16.
  */
 public class Command {
-    public static final byte HEAD_LOW            = 0x4d;
-    public static final byte HEAD_HEIGHT         = 0x57;
+    public static final byte HEAD_LOW = 0x4d;
+    public static final byte HEAD_HEIGHT = 0x57;
     public static final byte EVENT_POWERANDSPEED = 0x01;
-    public static final byte EVENT_MILEAGE       = 0x02;
-    public static final byte COM_LIGHTPOWER      = 0x03;
-    public static final byte COM_LOCK            = 0x04;
-    public static final byte EVENT_ACK           = 0x05;
-    public static final byte COM_POWEROFF        = 0x07;
-    public static final byte COM_TEST            = 0x08;
-    public static final byte COM_LOCKSPEED       = 0x09;
-    public static final byte COM_UPDATA          = 0x0A;
-    public static final byte C0M_SLIDE           = 0x0B;
-    public static final byte C0M_ADJUST          = 0x0C;
-    public static final byte C0M_REPASSWORD      = 0x0D;
-    public static final byte C0M_RENAME          = 0x0E;
-    public static final byte C0M_QUERY           = 0x0F;
+    public static final byte EVENT_MILEAGE = 0x02;
+    public static final byte COM_LIGHTPOWER = 0x03;
+    public static final byte COM_LOCK = 0x04;
+    public static final byte EVENT_ACK = 0x05;
+    public static final byte COM_POWEROFF = 0x07;
+    public static final byte COM_TEST = 0x08;
+    public static final byte COM_LOCKSPEED = 0x09;
+    public static final byte COM_UPDATA = 0x0A;
+    public static final byte C0M_SLIDE = 0x0B;
+    public static final byte C0M_ADJUST = 0x0C;
+    public static final byte C0M_REPASSWORD = 0x0D;
+    public static final byte C0M_RENAME = 0x0E;
+    public static final byte C0M_QUERY = 0x0F;
 
-    private byte[] comm(byte command, byte[] data) {
+    public static byte[] setData(byte command, byte[] data) {
         byte[] bytes = new byte[]{HEAD_LOW, HEAD_HEIGHT, command, (byte) data.length};
-        byte[] cmm   = new byte[bytes.length + data.length];
+        byte[] cmm = new byte[bytes.length + data.length];
         System.arraycopy(bytes, 0, cmm, 0, bytes.length);
         System.arraycopy(data, 0, cmm, bytes.length, data.length);
         return getCommand(cmm);
@@ -33,7 +33,7 @@ public class Command {
         byte[] comm = new byte[b.length + 2];
         System.arraycopy(b, 0, comm, 0, b.length);
         System.arraycopy(CRC16Modbus.getchecksum(b), 1, comm, b.length, 1);
-        System.arraycopy(CRC16Modbus.getchecksum(b), 0, comm, b.length+1, 1);
+        System.arraycopy(CRC16Modbus.getchecksum(b), 0, comm, b.length + 1, 1);
         return comm;
     }
 
@@ -101,7 +101,7 @@ public class Command {
         }
 
         public byte[] getCrcBytes() {
-            long   crc     = (int) this.getValue();
+            long crc = (int) this.getValue();
             byte[] byteStr = new byte[2];
             byteStr[0] = (byte) ((crc & 0x000000ff));
             byteStr[1] = (byte) ((crc & 0x0000ff00) >>> 8);

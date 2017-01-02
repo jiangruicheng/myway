@@ -1,9 +1,6 @@
 package com.jiangruicheng.myway.fragment;
 
 
-import android.bluetooth.BluetoothDevice;
-import android.content.BroadcastReceiver;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,7 +14,7 @@ import android.widget.TextView;
 
 import com.jiangruicheng.myway.R;
 import com.jiangruicheng.myway.activity.CarManagerActivity;
-import com.jiangruicheng.myway.view.ColorPaintView;
+import com.jiangruicheng.myway.view.ArcProgBar;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -33,9 +30,9 @@ public class CarFragment extends Fragment {
     @BindView(R.id.car_id)
     TextView       carId;
     @BindView(R.id.licheng)
-    ColorPaintView licheng;
+    ArcProgBar licheng;
     @BindView(R.id.dianliang)
-    ColorPaintView dianliang;
+    ArcProgBar dianliang;
     @BindView(R.id.biaopan)
     RelativeLayout biaopan;
     @BindView(R.id.search_ble)
@@ -43,7 +40,7 @@ public class CarFragment extends Fragment {
     @BindView(R.id.title)
     RelativeLayout title;
     @BindView(R.id.sudu)
-    ColorPaintView sudu;
+    ArcProgBar sudu;
 
     @OnClick(R.id.search_ble)
     void onsearch_ble() {

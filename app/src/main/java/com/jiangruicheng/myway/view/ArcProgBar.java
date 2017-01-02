@@ -10,7 +10,6 @@ import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Shader;
 import android.os.Build;
-import android.text.StaticLayout;
 import android.text.TextPaint;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -22,25 +21,26 @@ import com.jiangruicheng.myway.R;
 /**
  * Created by kongqing on 16-12-24.
  */
-public class ColorPaintView extends View {
-    public ColorPaintView(Context context) {
+public class ArcProgBar extends View {
+    public ArcProgBar(Context context) {
         super(context);
         init();
     }
 
-    public ColorPaintView(Context context, AttributeSet attrs) {
+    public ArcProgBar(Context context, AttributeSet attrs) {
         super(context, attrs);
         init();
-        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ColorPaintView);
-        title = a.getString(R.styleable.ColorPaintView_title);
-        value = a.getString(R.styleable.ColorPaintView_value);
-        description = a.getString(R.styleable.ColorPaintView_description);
-        guide_nub = a.getInteger(R.styleable.ColorPaintView_guide_nub, 0);
-        guide_scale = a.getInteger(R.styleable.ColorPaintView_guide_scale, 0);
-        scale = a.getInteger(R.styleable.ColorPaintView_scale, 0);
+        TypedArray a = context.obtainStyledAttributes(attrs, R.styleable.ArcProgBar);
+        title = a.getString(R.styleable.ArcProgBar_title);
+        value = a.getString(R.styleable.ArcProgBar_value);
+        description = a.getString(R.styleable.ArcProgBar_description);
+        guide_nub = a.getInteger(R.styleable.ArcProgBar_guide_nub, 0);
+        guide_scale = a.getInteger(R.styleable.ArcProgBar_guide_scale, 0);
+        scale = a.getInteger(R.styleable.ArcProgBar_scale, 0);
+        a.recycle();
     }
 
-    public ColorPaintView(Context context, AttributeSet attrs, int defStyleAttr) {
+    public ArcProgBar(Context context, AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init();
     }
@@ -50,19 +50,19 @@ public class ColorPaintView extends View {
         super.onMeasure(widthMeasureSpec, heightMeasureSpec);
     }
 
-    private int[]   colors_licheng   = new int[]{Color.rgb(0xdd, 0x48, 0xff), Color.rgb(0xf3, 0xcc, 0x8d), Color.rgb(0xff, 0x91, 0x6c)};
-    private int[]   colors_sudu      = new int[]{Color.rgb(0x4d, 0xeb, 0xb2), Color.rgb(0xf5, 0x88, 0xd5)};
-    private int[]   colors_dianliang = new int[]{Color.rgb(0xfe, 0x40, 0xa6), Color.rgb(0xff, 0x8c, 0x67), Color.rgb(0xfd, 0xd1, 0x00)};
-    private int[][] colors           = new int[3][];
-    private String  title            = "";
-    private String  value            = "";
-    private String         description;
-    private TextPaint      title_paint;
-    private TextPaint      value_paint;
+    private int[] colors_licheng = new int[]{Color.rgb(0xdd, 0x48, 0xff), Color.rgb(0xf3, 0xcc, 0x8d), Color.rgb(0xff, 0x91, 0x6c)};
+    private int[] colors_sudu = new int[]{Color.rgb(0x4d, 0xeb, 0xb2), Color.rgb(0xf5, 0x88, 0xd5)};
+    private int[] colors_dianliang = new int[]{Color.rgb(0xfe, 0x40, 0xa6), Color.rgb(0xff, 0x8c, 0x67), Color.rgb(0xfd, 0xd1, 0x00)};
+    private int[][] colors = new int[3][];
+    private String title = "";
+    private String value = "";
+    private String description;
+    private TextPaint title_paint;
+    private TextPaint value_paint;
     private DisplayMetrics metrics;
-    private Paint          guide_text;
-    private int            guide_scale;
-    private int            guide_nub;
+    private Paint guide_text;
+    private int guide_scale;
+    private int guide_nub;
 
 
     private void init() {
@@ -106,9 +106,9 @@ public class ColorPaintView extends View {
         this.scale = scale;
     }
 
-    private int            scale;
+    private int scale;
     private LinearGradient linearGradient;
-    private Paint          paint;
+    private Paint paint;
 
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     @Override
@@ -126,14 +126,14 @@ public class ColorPaintView extends View {
         title_paint.setColor(Color.rgb(0xb6, 0xb6, 0xb6));
         value_paint.setColor(Color.WHITE);
         title_paint.setTextSize(13 * metrics.scaledDensity);
-        value_paint.setTextSize(getWidth()/14 * metrics.scaledDensity);
+        value_paint.setTextSize(getWidth() / 14 * metrics.scaledDensity);
         //layout= new StaticLayout(title,title_paint,5,StaticLayout.Alignment.ALIGN_NORMAL,getWidth() / 2 - title_paint.getTextSize() / 2, getHeight() / 4, true);
         //layout.draw(canvas);
         canvas.rotate(screen_rate, getWidth() / 2, getHeight() / 2);
-        if (title!=null&&!title.intern().isEmpty()) {
+        if (title != null && !title.intern().isEmpty()) {
             canvas.drawText(title, getWidth() / 2 - title_paint.measureText(title) / 2, getHeight() / 3, title_paint);
         }
-        if (value!=null&&!value.intern().isEmpty()) {
+        if (value != null && !value.intern().isEmpty()) {
             canvas.drawText(value, getWidth() / 2 - value_paint.measureText(value) / 2, getHeight() - getHeight() / 5, value_paint);
         }
         if (description != null) {

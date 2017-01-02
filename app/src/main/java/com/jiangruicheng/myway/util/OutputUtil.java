@@ -16,8 +16,7 @@ import java.util.List;
 public class OutputUtil<T> {
     public boolean writeObjectIntoLocal(Context context, String fileName, T bean) {
         try {
-            // 通过openFileOutput方法得到一个输出流，方法参数为创建的文件名（不能有斜杠），操作模式
-            @SuppressWarnings("deprecation")
+
             FileOutputStream fos = context.openFileOutput(fileName, Context.MODE_WORLD_READABLE);
             ObjectOutputStream oos = new ObjectOutputStream(fos);
             oos.writeObject(bean);//写入
@@ -34,14 +33,6 @@ public class OutputUtil<T> {
             return false;
         }
     }
-
-    /**
-     * 将对象写入sd卡
-     *
-     * @param fileName 文件名
-     * @param bean     对象
-     * @return true 保存成功
-     */
     public boolean writObjectIntoSDcard(String fileName, T bean) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录
@@ -66,14 +57,6 @@ public class OutputUtil<T> {
             return false;
         }
     }
-
-    /**
-     * 将集合写入sd卡
-     *
-     * @param fileName 文件名
-     * @param list     集合
-     * @return true 保存成功
-     */
     public boolean writeListIntoSDcard(String fileName, List<T> list) {
         if (Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED)) {
             File sdCardDir = Environment.getExternalStorageDirectory();//获取sd卡目录

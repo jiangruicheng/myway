@@ -13,7 +13,6 @@ import android.os.ParcelUuid;
 import android.util.Log;
 
 import com.jiangruicheng.myway.RXbus.RxBus;
-import com.jiangruicheng.myway.adapter.BleAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -23,14 +22,14 @@ import java.util.UUID;
 public class ScanBle {
     private UUID serviceUUid_SA = UUID.fromString("0000FFE0-0000-1000-8000-00805F9B34FB");
     private UUID serviceUUid_RA = UUID.fromString("00001000-0000-1000-8000-00805F9B34FB");
-    private Handler    handler;
-    private BleAdapter baseAdapter;
+    private Handler handler;
+
     private int ScanTIME = 20000;
     BluetoothAdapter adapter = BluetoothAdapter.getDefaultAdapter();
     private BluetoothLeScanner leScanner = adapter.getBluetoothLeScanner();
 
-    public ScanBle(BleAdapter adapter, Handler handler) {
-        baseAdapter = adapter;
+    public ScanBle(Handler handler) {
+
         this.handler = handler;
 
     }
@@ -44,7 +43,7 @@ public class ScanBle {
                 stopscantble();
             }
         }, ScanTIME);
-     //   leScanner.startScan(scanCallback);
+        //   leScanner.startScan(scanCallback);
         ScanFilter scanFilter_SA = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(serviceUUid_SA)).build();
         ScanFilter scanFilter_RA = new ScanFilter.Builder().setServiceUuid(new ParcelUuid(serviceUUid_RA)).build();
         List<ScanFilter> scanFilters = new ArrayList<>();
@@ -68,7 +67,7 @@ public class ScanBle {
         @Override
         public void onScanResult(int callbackType, final ScanResult result) {
             super.onScanResult(callbackType, result);
-            String       name = result.getDevice().getName();
+            String name = result.getDevice().getName();
             StringBuffer type = new StringBuffer();
             for (int i = 0; i < name.length(); i++) {
                 if (name.charAt(i) == '-') {
@@ -76,17 +75,8 @@ public class ScanBle {
                 }
                 type.append(name.charAt(i));
             }
-            Log.i("typename", "onScanResult: "+type);
-            // baseAdapter.addDevice(result.getDevice());
+            Log.i("typename", "onScanResult: " + type);
             RxBus.getDefault().post(result);
-            /*handler.post(new Runnable() {
-                @Override
-                public void run() {
-                    baseAdapter.addDevice(result.getDevice());
-                    baseAdapter.notifyDataSetChanged();
-                    Log.d("ble", result.getDevice().getAddress());
-                }
-            });*/
         }
     };
 }

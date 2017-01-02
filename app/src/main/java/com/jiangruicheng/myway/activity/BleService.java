@@ -10,9 +10,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.jiangruicheng.myway.RXbus.RxBus;
-import com.jiangruicheng.myway.adapter.BleAdapter;
 import com.jiangruicheng.myway.ble.ConnBle;
-import com.jiangruicheng.myway.ble.HandlerCmd;
 import com.jiangruicheng.myway.ble.ScanBle;
 import com.jiangruicheng.myway.eventtype.BleConn;
 import com.jiangruicheng.myway.eventtype.BluetoothSearch;
@@ -27,18 +25,15 @@ import rx.android.schedulers.AndroidSchedulers;
  * Created by jiang_ruicheng on 16/12/15.
  */
 public class BleService extends Service {
-    Subscription     ble_start;
-    Subscription     ble_conn;
+    Subscription ble_start;
+    Subscription ble_conn;
     BluetoothAdapter bluetoothAdapter;
-    private BleAdapter bleAdapter;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.i("TAG", "onCreate: bleservice");
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        bleAdapter = new BleAdapter(BleService.this);
-
     }
 
     @Override
@@ -57,18 +52,12 @@ public class BleService extends Service {
 
                 @Override
                 public void onNext(BleConn conn) {
-                    BluetoothDevice device         = conn.getBluetoothDevice();
-                    ConnBle         connBle        = new ConnBle();
-                    UUID            service        = conn.getService();
-                    UUID            characteristic = conn.getCharacteristic();
+                    BluetoothDevice device = conn.getBluetoothDevice();
+                    ConnBle connBle = new ConnBle();
+                    UUID service = conn.getService();
+                    UUID characteristic = conn.getCharacteristic();
 
                     connBle.connble(device, BleService.this, service, characteristic);
-                    connBle.registerhandler(new HandlerCmd() {
-                        @Override
-                        public void handler(byte[] data) {
-
-                        }
-                    });
                 }
             });
         }
@@ -94,7 +83,7 @@ public class BleService extends Service {
                         if (!getPackageManager().hasSystemFeature(PackageManager.FEATURE_BLUETOOTH_LE)) {
                             bluetoothAdapter.startDiscovery();
                         } else {
-                            ScanBle scanBle = new ScanBle(bleAdapter, new Handler());
+                            ScanBle scanBle = new ScanBle(new Handler());
                             scanBle.scantble();
                         }
                     }
