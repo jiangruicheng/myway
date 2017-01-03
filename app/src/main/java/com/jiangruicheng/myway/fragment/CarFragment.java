@@ -9,11 +9,19 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.jiangruicheng.myway.R;
+import com.jiangruicheng.myway.RXbus.RxBus;
 import com.jiangruicheng.myway.activity.CarManagerActivity;
+import com.jiangruicheng.myway.activity.CarStatuActivity;
+import com.jiangruicheng.myway.data.Command;
+import com.jiangruicheng.myway.eventtype.SendCmd;
+import com.jiangruicheng.myway.util.ByteUtil;
+import com.jiangruicheng.myway.util.Quee;
 import com.jiangruicheng.myway.view.ArcProgBar;
 
 import butterknife.BindView;
@@ -30,9 +38,9 @@ public class CarFragment extends Fragment {
     @BindView(R.id.car_id)
     TextView       carId;
     @BindView(R.id.licheng)
-    ArcProgBar licheng;
+    ArcProgBar     licheng;
     @BindView(R.id.dianliang)
-    ArcProgBar dianliang;
+    ArcProgBar     dianliang;
     @BindView(R.id.biaopan)
     RelativeLayout biaopan;
     @BindView(R.id.search_ble)
@@ -40,7 +48,41 @@ public class CarFragment extends Fragment {
     @BindView(R.id.title)
     RelativeLayout title;
     @BindView(R.id.sudu)
-    ArcProgBar sudu;
+    ArcProgBar     sudu;
+    @BindView(R.id.conn)
+    LinearLayout   conn;
+    @BindView(R.id.statue)
+    LinearLayout   statue;
+
+    @OnClick(R.id.statue)
+    void onstatue() {
+        Intent intent = new Intent(getActivity(), CarStatuActivity.class);
+        getActivity().startActivity(intent);
+    }
+
+    @BindView(R.id.sock)
+    LinearLayout sock;
+    private boolean isLock = false;
+
+    @OnClick(R.id.sock)
+    void onsock() {
+        if (isLock) {
+            RxBus.getDefault().post(new SendCmd().
+                    setCmd(Command.getCommand
+                            (Command.setData(Command.COM_LOCK,
+                                    new byte[]{0x00}))));
+            isLock = false;
+        } else {
+            RxBus.getDefault().post(new SendCmd().
+                    setCmd(Command.getCommand
+                            (Command.setData(Command.COM_LOCK,
+                                    new byte[]{0x01}))));
+            isLock = true;
+        }
+    }
+
+    @BindView(R.id.mode)
+    LinearLayout mode;
 
     @OnClick(R.id.search_ble)
     void onsearch_ble() {
@@ -75,6 +117,7 @@ public class CarFragment extends Fragment {
         licheng.setScreen_rate(330);
         dianliang.setScale(1);
         licheng.setScale(2);
+        setcallback();
        /* new Thread() {
             @Override
             public void run() {
@@ -92,6 +135,54 @@ public class CarFragment extends Fragment {
             }
         }.start();*/
         return view;
+    }
+
+    private Quee.callback powerandspeed;
+    private Quee.callback MILEAGE;
+    private Quee.callback LOCK;
+
+    private void setcallback() {
+        powerandspeed = new Quee.callback() {
+            @Override
+            public void callback(byte[] b) {
+                byte[] b_speed = new byte[2];
+                System.arraycopy(b, 4, b_speed, 0, 2);
+                float speed = ByteUtil.getFloat(b_speed);
+                sudu.setValue((int) (speed / 100) + "");
+                sudu.setGuide_rate((speed / 100) * ((float) 270 / (float) 40) + 45);
+                byte[] b_power = new byte[2];
+                System.arraycopy(b, 6, b_power, 0, 2);
+                float power = ByteUtil.getFloat(b_power);
+                dianliang.setValue((int) (power) + "");
+                dianliang.setGuide_rate((power) * ((float) 270 / (float) 100) + 45);
+                sudu.invalidate();
+                dianliang.invalidate();
+            }
+        };
+        MILEAGE = new Quee.callback() {
+            @Override
+            public void callback(byte[] b) {
+                byte[] b_now = new byte[2];
+                System.arraycopy(b, 4, b_now, 0, 2);
+                float now = ByteUtil.getFloat(b_now);
+
+                byte[] b_total = new byte[2];
+                System.arraycopy(b, 6, b_total, 0, 2);
+                float total = ByteUtil.getFloat(b_total);
+                licheng.setValue((int) (total / 10) + "");
+                dianliang.setGuide_rate((now / 10) * ((float) 270 / (float) 100) + 45);
+                licheng.invalidate();
+            }
+        };
+        LOCK = new Quee.callback() {
+            @Override
+            public void callback(byte[] b) {
+                Toast.makeText(getActivity(), "" + b[5], Toast.LENGTH_SHORT).show();
+            }
+        };
+        Quee.getDefault().registcallback(Command.EVENT_POWERANDSPEED, powerandspeed);
+        Quee.getDefault().registcallback(Command.EVENT_MILEAGE, MILEAGE);
+        Quee.getDefault().registcallback(Command.COM_LOCK, LOCK);
     }
 
     @Override

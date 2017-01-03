@@ -209,7 +209,7 @@ public class ConnectBleActivity extends AppCompatActivity {
         if (search.isUnsubscribed()) {
             search.unsubscribe();
         }
-        RxBus.getDefault().post(new DisBleConn());
+        /*RxBus.getDefault().post(new DisBleConn());*/
     }
 
     @Override

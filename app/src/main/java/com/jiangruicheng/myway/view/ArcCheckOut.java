@@ -43,10 +43,10 @@ public class ArcCheckOut extends View {
         invalidate();
     }
 
-    private int prog = 60;
+    private int    prog           = 60;
     private String start_checkout = "开始检测";
-    private String stop_checkout = "终止检测";
-    private String progtext = prog + "";
+    private String stop_checkout  = "终止检测";
+    private String progtext;
 
     @Override
     protected void onDraw(Canvas canvas) {
@@ -62,7 +62,7 @@ public class ArcCheckOut extends View {
 
         if (!ISstart) {
             Bitmap bp = BitmapFactory.decodeResource(getResources(), R.mipmap.guzhang);
-            bp = ThumbnailUtils.extractThumbnail(bp, getWidth()/4, getHeight()/4);
+            bp = ThumbnailUtils.extractThumbnail(bp, getWidth() / 4, getHeight() / 4);
             canvas.drawBitmap(bp, getWidth() / 2 - bp.getWidth() / 2, getHeight() / 4, paint);
             bp.recycle();
         }
@@ -77,6 +77,7 @@ public class ArcCheckOut extends View {
         paint.setStrokeWidth(1);
         paint.setStyle(Paint.Style.FILL);
         if (ISstart) {
+            progtext = prog + "";
             paint.setTextSize(getWidth() / 5);
             canvas.drawText(progtext, getWidth() / 2 - paint.measureText(progtext) / 2, getHeight() / 8 * 3, paint);
             paint.setTextSize(getWidth() / 10);
@@ -94,5 +95,9 @@ public class ArcCheckOut extends View {
         canvas.drawText(s, getWidth() / 2 - paint.measureText(s) / 2, getHeight() - getHeight() / 4, paint);
 
 
+    }
+
+    public void reset() {
+        ISstart = false;
     }
 }

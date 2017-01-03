@@ -45,6 +45,7 @@
                 android:orientation="vertical">
 
                 <LinearLayout
+                    android:layout_marginTop="12dp"
                     android:layout_width="match_parent"
                     android:layout_height="120dp">
 
@@ -57,8 +58,10 @@
                         android:orientation="vertical">
 
                         <com.jiangruicheng.myway.view.ArcCheckOut
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"/>
+                            android:layout_margin="6dp"
+                            android:id="@+id/arcprog"
+                            android:layout_width="120dp"
+                            android:layout_height="120dp"/>
                     </LinearLayout>
 
                     <LinearLayout
@@ -70,6 +73,7 @@
                         android:orientation="vertical">
 
                         <TextView
+                            android:id="@+id/mesg"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:gravity="center_vertical"
@@ -80,6 +84,12 @@
 
             </LinearLayout>
 
+            <View
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -114,14 +124,21 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/screen"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:background="@mipmap/ischeck"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
 
@@ -134,7 +151,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:background="@mipmap/xianshiban"/>
+                    android:background="@mipmap/qudongban"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -142,7 +159,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="显示板"/>
+                    android:text="驱动板"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -157,14 +174,22 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/qudong"
                         android:layout_width="24dp"
+
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:background="@mipmap/ischeck"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
 
@@ -177,7 +202,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:background="@mipmap/xianshiban"/>
+                    android:background="@mipmap/power"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -185,7 +210,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="显示板"/>
+                    android:text="电池"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -200,14 +225,22 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/power"
+
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
-                        android:background="@mipmap/ischeck"
+                        android:background="@mipmap/mistake"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
 
@@ -220,7 +253,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:background="@mipmap/xianshiban"/>
+                    android:background="@mipmap/dianji"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -228,7 +261,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="显示板"/>
+                    android:text="电机"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -243,14 +276,22 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/dianji"
+
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:background="@mipmap/ischeck"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -262,7 +303,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:background="@mipmap/xianshiban"/>
+                    android:background="@mipmap/msocket"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -270,7 +311,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="显示板"/>
+                    android:text="CAN总线"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -285,14 +326,22 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/msocket"
+
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:background="@mipmap/ischeck"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="@color/car_id_text_color"/>
+
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
@@ -304,7 +353,7 @@
                     android:layout_height="match_parent"
                     android:layout_marginLeft="15dp"
                     android:layout_weight="1"
-                    android:background="@mipmap/xianshiban"/>
+                    android:background="@mipmap/monmistake"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -312,7 +361,7 @@
                     android:layout_marginLeft="15dp"
                     android:layout_weight="2"
                     android:gravity="center_vertical"
-                    android:text="显示板"/>
+                    android:text="常规错误"/>
 
                 <LinearLayout
                     android:layout_width="0dp"
@@ -327,10 +376,12 @@
                         android:layout_weight="8"/>
 
                     <TextView
+                        android:id="@+id/monmistake"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center_vertical"
                         android:background="@mipmap/ischeck"
+                        android:visibility="gone"
                         />
                 </LinearLayout>
             </LinearLayout>

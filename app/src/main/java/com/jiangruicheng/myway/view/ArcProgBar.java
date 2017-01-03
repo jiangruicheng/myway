@@ -55,6 +55,15 @@ public class ArcProgBar extends View {
     private int[] colors_dianliang = new int[]{Color.rgb(0xfe, 0x40, 0xa6), Color.rgb(0xff, 0x8c, 0x67), Color.rgb(0xfd, 0xd1, 0x00)};
     private int[][] colors = new int[3][];
     private String title = "";
+
+    public String getValue() {
+        return value;
+    }
+
+    public void setValue(String value) {
+        this.value = value;
+    }
+
     private String value = "";
     private String description;
     private TextPaint title_paint;
