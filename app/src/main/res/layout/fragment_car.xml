@@ -131,6 +131,7 @@
                         android:background="@mipmap/lianjie"/>
 
                     <TextView
+                        android:id="@+id/conn_text"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -184,6 +185,7 @@
                         android:background="@mipmap/sock"/>
 
                     <TextView
+                        android:id="@+id/lock_text"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"
@@ -207,6 +209,7 @@
                         android:background="@mipmap/mode"/>
 
                     <TextView
+                        android:id="@+id/mode_text"
                         android:layout_width="wrap_content"
                         android:layout_height="0dp"
                         android:layout_weight="1"

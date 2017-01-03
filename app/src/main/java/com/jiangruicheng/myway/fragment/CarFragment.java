@@ -53,6 +53,12 @@ public class CarFragment extends Fragment {
     LinearLayout   conn;
     @BindView(R.id.statue)
     LinearLayout   statue;
+    @BindView(R.id.conn_text)
+    TextView       connText;
+    @BindView(R.id.lock_text)
+    TextView       lockText;
+    @BindView(R.id.mode_text)
+    TextView       modeText;
 
     @OnClick(R.id.statue)
     void onstatue() {
@@ -83,6 +89,24 @@ public class CarFragment extends Fragment {
 
     @BindView(R.id.mode)
     LinearLayout mode;
+    private byte bmode = 1;
+
+    @OnClick(R.id.mode)
+    void onmode() {
+        if (bmode == 1) {
+            RxBus.getDefault().post(new SendCmd().
+                    setCmd(Command.getCommand
+                            (Command.setData(Command.COM_MODE,
+                                    new byte[]{0x00}))));
+            bmode = 0;
+        } else {
+            RxBus.getDefault().post(new SendCmd().
+                    setCmd(Command.getCommand
+                            (Command.setData(Command.COM_MODE,
+                                    new byte[]{0x01}))));
+            bmode = 1;
+        }
+    }
 
     @OnClick(R.id.search_ble)
     void onsearch_ble() {
@@ -177,6 +201,13 @@ public class CarFragment extends Fragment {
         LOCK = new Quee.callback() {
             @Override
             public void callback(byte[] b) {
+                if (b[5] == 1) {
+                    if (isLock) {
+                        lockText.setText("解锁");
+                    } else {
+                        lockText.setText("锁车");
+                    }
+                }
                 Toast.makeText(getActivity(), "" + b[5], Toast.LENGTH_SHORT).show();
             }
         };
@@ -188,6 +219,9 @@ public class CarFragment extends Fragment {
     @Override
     public void onDestroy() {
         super.onDestroy();
+        Quee.getDefault().unregistcallback(Command.EVENT_POWERANDSPEED, powerandspeed);
+        Quee.getDefault().unregistcallback(Command.EVENT_MILEAGE, MILEAGE);
+        Quee.getDefault().unregistcallback(Command.COM_LOCK, LOCK);
         unbinder.unbind();
     }
 }

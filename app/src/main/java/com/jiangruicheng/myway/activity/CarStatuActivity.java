@@ -13,7 +13,7 @@ public class CarStatuActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_car_statu);
-        carStatuFragment = new CarStatuFragment();
+        carStatuFragment = new CarStatuFragment("RA");
         getSupportFragmentManager().beginTransaction().add(R.id.fragment_frame, carStatuFragment).commit();
     }
 }
