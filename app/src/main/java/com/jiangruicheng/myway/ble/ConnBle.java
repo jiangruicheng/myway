@@ -99,6 +99,7 @@ public class ConnBle {
         return gatt;
 
     }
+
     @TargetApi(Build.VERSION_CODES.LOLLIPOP)
     private void getserver(BluetoothGatt gatt) {
         /*BluetoothGattService service = gatt.getService(uuid_service);
@@ -114,6 +115,9 @@ public class ConnBle {
             if (gattService.getUuid().equals(uuid_service)) {
                 this.gattService = gattService;
                 characteristic = gattService.getCharacteristic(uuid_characteristic);
+                for (BluetoothGattCharacteristic characteristic : gattService.getCharacteristics()) {
+                    gatt.setCharacteristicNotification(characteristic, true);
+                }
                 gatt.setCharacteristicNotification(characteristic, true);
                 RxBus.getDefault().post(new ConnSucc());
                 Log.d("ble", "getserver: success");

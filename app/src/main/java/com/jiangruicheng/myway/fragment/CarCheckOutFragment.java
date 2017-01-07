@@ -49,21 +49,6 @@ public class CarCheckOutFragment extends Fragment {
     @OnClick(R.id.arcprog)
     void onarcprog() {
         RxBus.getDefault().post(new SendCmd().setCmd(Command.getCommand(Command.setData(Command.COM_TEST, new byte[]{0x01}))));
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (isrun) {
-                    for (int i = 0; i < 101; i++) {
-                        handler.sendEmptyMessage(i);
-                        try {
-                            Thread.sleep(20);
-                        } catch (InterruptedException e) {
-                            e.printStackTrace();
-                        }
-                    }
-                }
-            }
-        }).start();
     }
 
     @BindView(R.id.path)
@@ -126,7 +111,21 @@ public class CarCheckOutFragment extends Fragment {
                 CarStatu.getDefault().getStatue().setIs_tran_right(Is(carstatues_1[7]));
                 CarStatu.getDefault().getStatue().setIs_befor_light_ON(Is(carstatues_2[0]));
                 CarStatu.getDefault().getStatue().setIs_after_light_ON(Is(carstatues_2[1]));
-
+                new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (isrun) {
+                            for (int i = 0; i < 101; i++) {
+                                handler.sendEmptyMessage(i);
+                                try {
+                                    Thread.sleep(20);
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                    }
+                }).start();
             }
         };
         Quee.getDefault().registcallback((byte) 0xff, CHECKEOUT);

@@ -75,7 +75,7 @@ public class Quee {
 
                                 if (reciveCmd.getCmd()[0] == Command.HEAD_LOW && reciveCmd.getCmd()[1] == Command.HEAD_HEIGHT && Command.chechsum(reciveCmd.getCmd())) {
                                     byte eventtype = 0;
-                                    if (reciveCmd.getCmd() != null && reciveCmd.getCmd()[2] != 0x01 && reciveCmd.getCmd()[2] != 0x02) {
+                                    if (reciveCmd.getCmd() != null) {
                                         eventtype = geteventtype(reciveCmd.getCmd());
                                     }
                                     Log.i("send", "addcomm: GO");
